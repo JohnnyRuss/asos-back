@@ -1,0 +1,4 @@
+/node_modules
+/public/JSON
+/public/assets/products.json
+.env
