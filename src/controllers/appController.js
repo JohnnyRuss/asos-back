@@ -68,10 +68,10 @@ async function arrayCreator(data, schema) {
 async function createBrand() {
   // await Promise.all(brandsData.map(async (b) => await Brand.create(b)));
   await Brand.create({
-    name: "puma",
+    name: "only & sons",
     fig: "",
     history:
-      "Always bringing its A-game, sports giant <b>PUMA<b> is all about setting and smashing goals in its quest to be forever faster. Feeling motivated yet? Join the club. Packed with all our favourite picks, our <b>PUMA<b> at ASOS edit brings the brand’s MVPs to your rotation. From comfy-cool joggers, hoodies and sweatshirts to caps, bags and trainers, it’s all here to cop. Activewear gets levelled up too, with sweat-wicking tops, leggings and sports bras taking centre stage.",
+      "Quality craftsmanship is at the forefront of Danish brand <b>Only & Sons<b>, whose signature designs include classic knitwear, relaxed sweats and denim. Using a range of high quality fabrics, theirs is a seamlessly crafted collection for laid-back style.",
   });
 }
 
@@ -94,8 +94,10 @@ async function createProducts() {
 
 // createProducts();
 
-// brands -> new look, & other stories, puma, tommy hilfiger, collusion,
-//product type -> streetwear, emerging brands
+// clothing -->
+// type --> sportswear
+// fit --> outdoors
+// brands -->
 
 async function generateRatingAndVotes() {
   const random_1_5 = () => (Math.random() * 5).toFixed(1);
