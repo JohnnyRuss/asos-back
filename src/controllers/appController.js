@@ -68,10 +68,10 @@ async function arrayCreator(data, schema) {
 async function createBrand() {
   // await Promise.all(brandsData.map(async (b) => await Brand.create(b)));
   await Brand.create({
-    name: "only & sons",
+    name: "dickies",
     fig: "",
     history:
-      "Quality craftsmanship is at the forefront of Danish brand <b>Only & Sons<b>, whose signature designs include classic knitwear, relaxed sweats and denim. Using a range of high quality fabrics, theirs is a seamlessly crafted collection for laid-back style.",
+      "Dickies is the definition of a heritage brand. C.N. Williamson and EE 'Colonel' Dickie began their careers in the vehicle and harness business in 1918. They clubbed together to buy an overall company that would become <b>Dickies<b> in 1922. Known for its hardwearing staples, <b>Dickies<b> range of T-shirts, sweatshirts and tops are available in sizes up to XXXL.",
   });
 }
 
