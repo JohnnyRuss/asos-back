@@ -13,7 +13,12 @@ const ProductsSchema = new Schema(
       require: true,
     },
 
-    productType: [String],
+    productType: [
+      {
+        label: String,
+        query: String,
+      },
+    ],
 
     title: {
       type: String,

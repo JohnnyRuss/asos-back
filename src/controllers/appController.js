@@ -6,22 +6,6 @@ const Product = require("../models/Product");
 // const brandsData = require("../../public/assets/brands.json");
 const productsData = require("../../public/assets/products.json");
 
-// compass
-// {productType:{$regex:"jumpsuits"}}
-
-exports.getProducts = Async(async function (req, res, next) {
-  const products = await Product.find().populate({ path: "brand" });
-
-  res.status(200).json(products);
-});
-
-exports.getProduct = Async(async function (req, res, next) {
-  const { productId } = req.params;
-  const product = await Product.findById(productId).populate({ path: "brand" });
-
-  res.status(200).json(product);
-});
-
 exports.updateProductType = Async(async function (req, res, next) {
   const { productId } = req.params;
   const { types } = req.body;
@@ -94,11 +78,6 @@ async function createProducts() {
 
 // createProducts();
 
-// clothing -->
-// type --> sportswear
-// fit --> outdoors
-// brands -->
-
 async function generateRatingAndVotes() {
   const random_1_5 = () => (Math.random() * 5).toFixed(1);
   const random_1_1000 = () => Math.floor(Math.random() * 1000);
@@ -113,16 +92,40 @@ async function generateRatingAndVotes() {
 
 async function updateProducts() {
   // await generateRatingAndVotes();
-  // await Product.updateMany({ $addToSet: { productType: "clothing" } });
-  await Product.updateMany(
-    { brand: { $exists: true } },
-    { $addToSet: { productType: "brands" } }
-  );
-  // await Product.updateMany({ $unset: { isNew: "" } });
-  // const products = await Product.find();
-  // products.map(async (prod, i) => {
-  //   if (i % 2 === 0)
-  //     await Product.findByIdAndUpdate(prod._id, { $set: { newIn: false } });
-  // });
+
+  const products = await Product.find();
+  products.map(async (product, i) => {
+    const newTypes = product.productType.map((type) => {
+      const capitalize = (devider, txt) =>
+        txt
+          .split(devider)
+          .map((fr) => fr[0].toUpperCase() + fr.slice(1))
+          .join(devider);
+
+      const blackList = ["t-shirts"];
+
+      function generateLabel() {
+        let label;
+
+        if (type.includes("-and-")) {
+          label = capitalize(" & ", type.replaceAll("-and-", " & "));
+        } else if (type.includes("-") && !blackList.includes(type)) {
+          label = capitalize(" ", type.replace("-", " "));
+        } else {
+          label = capitalize(" ", type.replace(" ", " "));
+        }
+
+        return label;
+      }
+
+      return {
+        label: generateLabel(),
+        query: type,
+      };
+    });
+    // console.log(newTypes);
+    product.productType = newTypes;
+    await product.save({ validateBeforeSave: false });
+  });
 }
 // updateProducts();
