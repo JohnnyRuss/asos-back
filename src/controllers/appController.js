@@ -94,23 +94,45 @@ exports.updateProductsTypes = Async(async function (req, res, next) {
   // brands = brands
   //   .map((b) => b.name.toLowerCase())
   //   .concat(["asos design", "other stories", "pull-and-bear"]);
-
-  // const products = await Product.find();
-  // products.map(async (p) => {
-  //   if (p.productType.some((t) => brands.includes(t.query))) {
-  //     p.productType = p.productType
-  //       .filter((t) => !brands.includes(t.query))
-  //       .map((t) => ({
-  //         label: t.label,
-  //         query: t.query,
-  //       }));
-  //     await p.save({ validateBeforeSave: false });
-  //   }
-  // });
+  const black_list = [
+    "coats-and-jackets",
+    "t-shirt-and-vests",
+    "jumpers-and-cardigans",
+    "hoodies-and-vests",
+    "suits-and-tailoring",
+    "trousers-and-chinos",
+    "lingerie-and-nightwear",
+    "tracksuits-and-joggers",
+    "hoodies-and-sweatshirts",
+    "jumpsuits-and-playsuits",
+    "shirts-and-blouses",
+    "swimwear-and-Beachwear",
+    "trousers-and-leggings",
+    "curve-and-plus size",
+    "modest",
+    "fashion",
+    "linen",
+    "ski-and-snowboard",
+    "bridesmaid",
+    "slip",
+    "trousers-and-tights",
+    "yoga-and-studio",
+  ];
+  const products = await Product.find();
+  products.map(async (p) => {
+    // if (p.productType.some((t) => black_list.includes(t.query))) {
+    // .filter((t) => !black_list.includes(t.query))
+    p.productType = p.productType.map((t) => ({
+      label: t.label,
+      query: t.query.split(" ").join("-"),
+    }));
+    await p.save({ validateBeforeSave: false });
+    // }
+  });
 
   // await Product.updateMany({ $set: { "productType._id": undefined } });
 
-  res.status(200).json({ product });
+  res.status(200).json({ products });
 });
 
 // updateProducts();
