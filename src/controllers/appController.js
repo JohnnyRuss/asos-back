@@ -73,7 +73,6 @@ async function createProducts() {
   }));
 
   await arrayCreator(data, Product);
-  // await Product.deleteMany()
 }
 
 // createProducts();
@@ -90,42 +89,28 @@ async function generateRatingAndVotes() {
   );
 }
 
-async function updateProducts() {
-  // await generateRatingAndVotes();
+exports.updateProductsTypes = Async(async function (req, res, next) {
+  // let brands = await Brand.find();
+  // brands = brands
+  //   .map((b) => b.name.toLowerCase())
+  //   .concat(["asos design", "other stories", "pull-and-bear"]);
 
-  const products = await Product.find();
-  products.map(async (product, i) => {
-    const newTypes = product.productType.map((type) => {
-      const capitalize = (devider, txt) =>
-        txt
-          .split(devider)
-          .map((fr) => fr[0].toUpperCase() + fr.slice(1))
-          .join(devider);
+  // const products = await Product.find();
+  // products.map(async (p) => {
+  //   if (p.productType.some((t) => brands.includes(t.query))) {
+  //     p.productType = p.productType
+  //       .filter((t) => !brands.includes(t.query))
+  //       .map((t) => ({
+  //         label: t.label,
+  //         query: t.query,
+  //       }));
+  //     await p.save({ validateBeforeSave: false });
+  //   }
+  // });
 
-      const blackList = ["t-shirts"];
+  // await Product.updateMany({ $set: { "productType._id": undefined } });
 
-      function generateLabel() {
-        let label;
+  res.status(200).json({ product });
+});
 
-        if (type.includes("-and-")) {
-          label = capitalize(" & ", type.replaceAll("-and-", " & "));
-        } else if (type.includes("-") && !blackList.includes(type)) {
-          label = capitalize(" ", type.replace("-", " "));
-        } else {
-          label = capitalize(" ", type.replace(" ", " "));
-        }
-
-        return label;
-      }
-
-      return {
-        label: generateLabel(),
-        query: type,
-      };
-    });
-    // console.log(newTypes);
-    product.productType = newTypes;
-    await product.save({ validateBeforeSave: false });
-  });
-}
 // updateProducts();
