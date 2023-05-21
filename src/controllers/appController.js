@@ -96,7 +96,7 @@ exports.updateProductsTypes = Async(async function (req, res, next) {
   //   .concat(["asos design", "other stories", "pull-and-bear"]);
   const black_list = [
     "coats-and-jackets",
-    "t-shirt-and-vests",
+    "t-shirts-and-vests",
     "jumpers-and-cardigans",
     "hoodies-and-vests",
     "suits-and-tailoring",
@@ -120,14 +120,16 @@ exports.updateProductsTypes = Async(async function (req, res, next) {
   ];
   const products = await Product.find();
   products.map(async (p) => {
-    // if (p.productType.some((t) => black_list.includes(t.query))) {
-    // .filter((t) => !black_list.includes(t.query))
-    p.productType = p.productType.map((t) => ({
-      label: t.label,
-      query: t.query.split(" ").join("-"),
-    }));
-    await p.save({ validateBeforeSave: false });
-    // }
+    if (p.productType.some((t) => black_list.includes(t.query))) {
+      p.productType = p.productType.filter(
+        (t) => !black_list.includes(t.query)
+      );
+      // .map((t) => ({
+      //   label: t.label,
+      //   query: t.query.split(" ").join("-"),
+      // }));
+      await p.save({ validateBeforeSave: false });
+    }
   });
 
   // await Product.updateMany({ $set: { "productType._id": undefined } });

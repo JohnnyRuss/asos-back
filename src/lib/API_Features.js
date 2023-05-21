@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 class API_Features {
   constructor(query, userQuery) {
     this.query = query;
@@ -28,7 +30,9 @@ class API_Features {
       query["productType.query"] = this.userQuery.productType.split(",");
 
     if (queryableKeys.includes("brand"))
-      query["productType.query"] = this.userQuery.brand.split(",");
+      query["brand"] = this.userQuery.brand
+        .split(",")
+        .filter((id) => mongoose.Types.ObjectId.isValid(id));
 
     if (queryableKeys.includes("size"))
       query["sizes.size"] = this.userQuery.size.split(",");

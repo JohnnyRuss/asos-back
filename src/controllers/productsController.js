@@ -30,39 +30,52 @@ exports.getProduct = Async(async function (req, res, next) {
 });
 
 exports.getProductsFilter = Async(async function (req, res, next) {
-  // const productTypes = await Product.find({
-  //   ...req.userBaseQuery,
-  // }).distinct("productType");
-  const productTypes = await Product.aggregate([
+  const filterArr = await Product.aggregate([
     { $match: req.userBaseQuery },
     {
       $project: {
         productType: 1,
+        sizes: 1,
+        brand: 1,
       },
+    },
+    {
+      $unwind: "$sizes",
     },
     {
       $unwind: "$productType",
     },
     {
       $group: {
-        _id: "$productType.query",
-        label: { $first: "$productType.label" },
-        query: { $first: "$productType.query" },
+        _id: null,
+        brands: { $addToSet: "$brand" },
+        sizes: { $addToSet: "$sizes.size" },
+        productTypes: {
+          $addToSet: {
+            _id: "$productType.query",
+            label: "$productType.label",
+            query: "$productType.query",
+          },
+        },
       },
     },
     {
-      $sort: { label: 1 },
+      $lookup: {
+        as: "brands",
+        from: "brands",
+        foreignField: "_id",
+        localField: "brands",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+            },
+          },
+        ],
+      },
     },
   ]);
-
-  const sizes = await Product.find({
-    ...req.userBaseQuery,
-  }).distinct("sizes.size");
-
-  let brands = await Product.find({
-    ...req.userBaseQuery,
-  }).distinct("brand");
-  brands = await Brand.find({ _id: brands }).select("-history -fig -__v");
 
   const sort = [
     { label: "new", query: "createdAt" },
@@ -70,10 +83,12 @@ exports.getProductsFilter = Async(async function (req, res, next) {
     { label: "price low to high", query: "price" },
   ];
 
-  res.status(200).json({
-    productTypes,
-    sizes,
-    brands,
+  const filter = {
     sort,
-  });
+    brands: filterArr[0]?.brands || [],
+    sizes: filterArr[0]?.sizes || [],
+    productTypes: filterArr[0]?.productTypes || [],
+  };
+
+  res.status(200).json(filter);
 });
