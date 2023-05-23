@@ -3,6 +3,7 @@ const AppError = require("../lib/AppError");
 const Brand = require("../models/Brands");
 const Product = require("../models/Product");
 const API_Features = require("../lib/API_Features");
+const mongoose = require("mongoose");
 
 exports.getProducts = Async(async function (req, res, next) {
   const { query } = new API_Features(
@@ -91,4 +92,51 @@ exports.getProductsFilter = Async(async function (req, res, next) {
   };
 
   res.status(200).json(filter);
+});
+
+exports.getRelatedProducts = Async(async function (req, res, next) {
+  const { productId } = req.params;
+
+  const product = await Product.findById(productId);
+  const productTypes = product.productType
+    .map((t) => t.query)
+    .filter((t) => !["clothing", "brands"].includes(t));
+
+  const relatedProducts = await Product.aggregate([
+    {
+      $match: {
+        for: product.for,
+        "productType.query": { $in: productTypes },
+        _id: { $ne: new mongoose.Types.ObjectId(productId) },
+      },
+    },
+    {
+      $addFields: {
+        matchedTypes: {
+          $setIntersection: [productTypes, "$productType.query"],
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        matchedTypes: 1,
+      },
+    },
+    { $unwind: "$matchedTypes" },
+    {
+      $group: {
+        _id: "$_id",
+        matchedCount: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { matchedCount: -1 },
+    },
+    {
+      $limit: 20,
+    },
+  ]);
+
+  res.status(200).json({ size: relatedProducts.length, relatedProducts });
 });

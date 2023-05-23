@@ -3,6 +3,7 @@ const {
   getProducts,
   getProduct,
   getProductsFilter,
+  getRelatedProducts,
 } = require("../controllers/productsController");
 const {
   generateUserBaseQuery,
@@ -15,5 +16,7 @@ router.route("/").get(generateUserBaseQuery, getProducts);
 router.route("/filter").get(generateUserBaseQuery, getProductsFilter);
 
 router.route("/:productId").get(getProduct);
+
+router.route("/:productId/related").get(getRelatedProducts);
 
 module.exports = router;
