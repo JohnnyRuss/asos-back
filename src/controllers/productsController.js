@@ -134,9 +134,59 @@ exports.getRelatedProducts = Async(async function (req, res, next) {
       $sort: { matchedCount: -1 },
     },
     {
-      $limit: 20,
+      $limit: 10,
+    },
+    {
+      $lookup: {
+        foreignField: "_id",
+        localField: "_id",
+        from: "products",
+        as: "product",
+        pipeline: [
+          {
+            $lookup: {
+              from: "brands",
+              foreignField: "_id",
+              localField: "brand",
+              as: "brand",
+              pipeline: [
+                {
+                  $project: {
+                    name: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $project: {
+              price: 1,
+              sale: 1,
+              brand: { $first: "$brand" },
+              media: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        product: 1,
+      },
+    },
+    {
+      $unwind: "$product",
+    },
+    {
+      $group: {
+        _id: "$product._id",
+        price: { $first: "$product.price" },
+        sale: { $first: "$product.sale" },
+        media: { $first: "$product.media" },
+        brand: { $first: "$product.brand" },
+      },
     },
   ]);
 
-  res.status(200).json({ size: relatedProducts.length, relatedProducts });
+  res.status(200).json(relatedProducts);
 });
