@@ -5,6 +5,7 @@ const Product = require("../models/Product");
 
 // const brandsData = require("../../public/assets/brands.json");
 const productsData = require("../../public/assets/products.json");
+const Products = require("../models/Product");
 
 exports.updateProductType = Async(async function (req, res, next) {
   const { productId } = req.params;
@@ -45,10 +46,6 @@ exports.addBrandFig = Async(async function (req, res, next) {
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-async function arrayCreator(data, schema) {
-  await Promise.all(data.map(async (b) => await schema.create(b)));
-}
-
 async function createBrand() {
   // await Promise.all(brandsData.map(async (b) => await Brand.create(b)));
   await Brand.create({
@@ -72,7 +69,7 @@ async function createProducts() {
     },
   }));
 
-  await arrayCreator(data, Product);
+  await Promise.all(data.map(async (b) => await Product.create(b)));
 }
 
 // createProducts();

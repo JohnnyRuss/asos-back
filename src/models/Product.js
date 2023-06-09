@@ -8,6 +8,10 @@ const ProductsSchema = new Schema(
       required: false,
     },
 
+    brandName: {
+      type: String,
+    },
+
     for: {
       type: String,
       require: true,
