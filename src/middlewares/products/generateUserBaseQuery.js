@@ -9,8 +9,9 @@ exports.generateUserBaseQuery = async function (req, res, next) {
       userQuery === "all"
         ? (query["productType.query"] = { $regex: "" })
         : (query["$or"] = [
-            { "productType.query": userQuery?.split(",") },
-            { brandName: userQuery?.split(",") },
+            ...userQuery
+              ?.split(",")
+              .flatMap((q) => [{ "productType.query": q }, { brandName: q }]),
           ]);
     }
 
@@ -18,7 +19,7 @@ exports.generateUserBaseQuery = async function (req, res, next) {
   }
 
   req.userBaseQuery = {
-    $or: [{ for: search_for }, { for: "all" }],
+    for: search_for,
     $and: [
       generateNestedQuery(search_in || ""),
       generateNestedQuery(search || ""),

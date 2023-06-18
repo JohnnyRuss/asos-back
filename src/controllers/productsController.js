@@ -32,7 +32,9 @@ exports.getProduct = Async(async function (req, res, next) {
 
 exports.getProductsFilter = Async(async function (req, res, next) {
   const filterArr = await Product.aggregate([
-    { $match: req.userBaseQuery },
+    {
+      $match: req.userBaseQuery,
+    },
     {
       $project: {
         productType: 1,
