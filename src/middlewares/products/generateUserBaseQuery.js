@@ -21,8 +21,8 @@ exports.generateUserBaseQuery = async function (req, res, next) {
   req.userBaseQuery = {
     for: search_for,
     $and: [
-      generateNestedQuery(search_in || ""),
-      generateNestedQuery(search || ""),
+      generateNestedQuery(search_in || "all"),
+      generateNestedQuery(search || "all"),
     ],
   };
 
